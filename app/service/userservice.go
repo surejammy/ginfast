@@ -16,6 +16,13 @@ func NewUserService() *User {
 	return &User{}
 }
 
+// type: 1：目录；2：菜单；3：按钮
+const (
+	MenuTypeDir  = 1
+	MenuTypeMenu = 2
+	MenuTypeBtn  = 3
+)
+
 // 获取用户信息(包含角色、权限)
 func (u *User) GetUserProfile(c *gin.Context, userID uint) (profile *models.UserProfile, err error) {
 
@@ -62,7 +69,7 @@ func (u *User) GetUserProfile(c *gin.Context, userID uint) (profile *models.User
 			// 查询按钮类型的菜单（type=3）
 			buttonMenus := models.NewSysMenuList()
 			err = buttonMenus.Find(c, func(db *gorm.DB) *gorm.DB {
-				return db.Select("permission").Where("id IN ? AND type = ? AND permission !=''", menuIDs, 3)
+				return db.Select("permission").Where("id IN ? AND type = ? AND permission !=''", menuIDs, MenuTypeBtn)
 			})
 			if err != nil {
 				return

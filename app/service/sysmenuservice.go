@@ -281,10 +281,10 @@ func (s *SysMenuService) Update(c *gin.Context, req models.SysMenuUpdateRequest)
 	if menu.IsEmpty() {
 		return nil, fmt.Errorf("菜单不存在")
 	}
-	if req.Type == 3 && req.ParentID == 0 {
+	if req.Type == MenuTypeBtn && req.ParentID == 0 {
 		return nil, fmt.Errorf("请选择父级菜单")
 	}
-	if req.Type == 1 || req.Type == 2 {
+	if req.Type == MenuTypeDir || req.Type == MenuTypeMenu {
 		// 检查菜单名称是否与其他菜单冲突（排除当前菜单）
 		existMenu := models.NewSysMenu()
 		err = existMenu.Find(c, func(d *gorm.DB) *gorm.DB {
@@ -311,10 +311,10 @@ func (s *SysMenuService) Update(c *gin.Context, req models.SysMenuUpdateRequest)
 	}
 
 	// 如果是按钮类型，检查Permission是否与其他按钮重复（排除当前菜单）
-	if req.Type == 3 && req.Permission != "" {
+	if req.Type == MenuTypeBtn && req.Permission != "" {
 		existPermission := models.NewSysMenu()
 		err = existPermission.Find(c, func(d *gorm.DB) *gorm.DB {
-			return d.Where("permission = ? AND type = 3 AND id != ?", req.Permission, req.ID)
+			return d.Where("permission = ? AND type = ? AND id != ?", req.Permission, MenuTypeBtn, req.ID)
 		})
 		if err != nil {
 			return nil, err

@@ -73,7 +73,7 @@ func (sm *SysMenuController) GetRouters(c *gin.Context) {
 	if !needCheckPermission {
 		// 不需要检查权限，直接返回所有菜单数据（不含按钮）
 		err = menuList.Find(c, func(db *gorm.DB) *gorm.DB {
-			return db.Where("disable = ?", 0).
+			return db.Where("disable = ?", false).
 				Where("type = 1 or type = 2") // 只返回目录和菜单，不返回按钮
 		})
 		if err != nil {
@@ -122,7 +122,7 @@ func (sm *SysMenuController) GetRouters(c *gin.Context) {
 		}
 
 		err = menuList.Find(c, func(db *gorm.DB) *gorm.DB {
-			return db.Where("disable = ?", 0).
+			return db.Where("disable = ?", false).
 				// 只返回目录和菜单，不返回按钮
 				Where("type = 1 or type = 2").
 				Where("id in (?)", app.DB().WithContext(c).Model(&models.SysRoleMenu{}).Where("role_id in (?)", allRoleIds).Select("menu_id"))
@@ -153,7 +153,7 @@ func (sm *SysMenuController) GetRouters(c *gin.Context) {
 func (sm *SysMenuController) GetMenuList(c *gin.Context) {
 	menuList := models.NewSysMenuList()
 	err := menuList.Find(c, func(db *gorm.DB) *gorm.DB {
-		return db.Preload("Apis").Where("disable = ?", 0)
+		return db.Preload("Apis").Where("disable = ?", false)
 	})
 	if err != nil {
 		sm.FailAndAbort(c, "获取菜单失败", err)
